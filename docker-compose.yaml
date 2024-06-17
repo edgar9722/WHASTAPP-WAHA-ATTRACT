@@ -1,0 +1,80 @@
+version: '3'
+services:
+  waha:
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/waha
+    container_name: waha
+    ports:
+      - '3000:3000/tcp'
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      - WHATSAPP_HOOK_URL=https://httpbin.org/post
+      - WHATSAPP_HOOK_EVENTS=message
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+    restart: always
+
+  waha-plus:
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/waha-plus:chrome
+    container_name: waha-plus
+    ports:
+      - '3000:3000/tcp'
+    volumes:
+      - './.sessions:/app/.sessions'
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      # - WHATSAPP_RESTART_ALL_SESSIONS=True
+      # - WHATSAPP_HOOK_URL=https://httpbin.org/post
+      # - WHATSAPP_HOOK_EVENTS=message
+      # - WHATSAPP_API_HOSTNAME=localhost
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_API_KEY=321
+      # Username and password for Swagger
+      - WHATSAPP_SWAGGER_USERNAME=swagger
+      - WHATSAPP_SWAGGER_PASSWORD=admin
+      # Username and password for WAHA Dashboard
+      # you can use the same username and password for both Swagger and Dashboard
+      # Default - waha / waha
+      - WAHA_DASHBOARD_USERNAME=waha
+      - WAHA_DASHBOARD_PASSWORD=waha
+      # Engine specific environment variables
+      # - WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix
+    restart: always
+
+  waha-plus--mongodb:
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/waha-plus:chrome
+    container_name: waha-plus--mongodb
+    ports:
+      - '3000:3000/tcp'
+    volumes:
+      - './.sessions:/app/.sessions'
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      # - WHATSAPP_RESTART_ALL_SESSIONS=True
+      # - WHATSAPP_HOOK_URL=https://httpbin.org/post
+      # - WHATSAPP_HOOK_EVENTS=message
+      # - WHATSAPP_API_KEY=321
+      # - WHATSAPP_SWAGGER_USERNAME=admin
+      # - WHATSAPP_SWAGGER_PASSWORD=123
+      # - WAHA_DASHBOARD_USERNAME=admin
+      # - WAHA_DASHBOARD_PASSWORD=123
+      # - WHATSAPP_API_HOSTNAME=localhost
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
+    restart: always
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - '27017:27017/tcp'
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+volumes:
+  mongodb_data: {}
