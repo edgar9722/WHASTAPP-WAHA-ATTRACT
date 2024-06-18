@@ -1,6 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { json, urlencoded } from 'express';
+import { AppModule } from './app.module';
+
 
 import { AllExceptionsFilter } from './api/exception.filter';
 import { WhatsappConfigService } from './config.service';
@@ -39,15 +41,18 @@ async function loadModules(): Promise<
   return [AppModulePlus, SwaggerConfiguratorPlus];
 }
 
-async function bootstrap() {
-  const [AppModule, SwaggerModule] = await loadModules();
-  const app = await NestFactory.create(AppModule, {
-    logger: getLogLevels(false),
-  });
 
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
   app.enableShutdownHooks();
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.enableCors();
+  app.enableCors({
+    origin: ['https://tranquil-spontaneity-production.up.railway.app'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   // Ideally, we should apply it globally.
   // but for now we added it ValidationPipe on Controller or endpoint level
   // app.useGlobalPipes(new ValidationPipe({ transform: true }));
