@@ -45,6 +45,8 @@ WORKDIR /app
 COPY --from=build /src/node_modules ./node_modules
 COPY --from=build /src/dist ./dist
 COPY package.json ./
+COPY tsconfig.json ./
+
 
 # Expose the application port and run the application
 EXPOSE 3000
