@@ -12,9 +12,10 @@ RUN apt-get update \
     && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 WORKDIR /src
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock tsconfig.json ./
 RUN yarn set version 3.6.3
-RUN --mount=type=ssh yarn install
+# Correct cache mount syntax
+RUN --mount=type=cache,target=/root/.yarn/cache yarn install
 
 # Copy application source code and build
 COPY . .
@@ -46,7 +47,6 @@ COPY --from=build /src/node_modules ./node_modules
 COPY --from=build /src/dist ./dist
 COPY package.json ./
 COPY tsconfig.json ./
-
 
 # Expose the application port and run the application
 EXPOSE 3000
